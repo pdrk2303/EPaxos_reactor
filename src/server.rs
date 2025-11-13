@@ -1,4 +1,4 @@
-use crate::common::{EMsg, ReadResponse};
+use crate::common::{EMsg, ReadResponse, WriteResponse};
 use reactor_actor::codec::BincodeCodec;
 use reactor_actor::{BehaviourBuilder, RouteTo, RuntimeCtx, SendErrAction};
 
@@ -23,6 +23,15 @@ impl reactor_actor::ActorProcess for Processor {
                     msg_id: msg.msg_id.clone(),
                     key: msg.key.clone(),
                     val,
+                })]
+            }
+
+            EMsg::WriteRequest(msg) => {
+                self.data.insert(msg.key.clone(), msg.val.clone());
+                vec![EMsg::WriteResponse(WriteResponse {
+                    msg_id: msg.msg_id.clone(),
+                    key: msg.key.clone(),
+                    success: true,
                 })]
             }
             _ => {
